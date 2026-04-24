@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Entity Validations ---
+
+    function isValidUser(data) {
+      return data.uid == request.auth.uid 
+        && data.email == request.auth.token.email
+        && data.displayName is string && data.displayName.size() <= 100
+        && (data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 512))
+        && data.targetRoles is list && data.targetRoles.size() <= 10
+        && (data.confidenceScore == null || (data.confidenceScore is number && data.confidenceScore >= 0 && data.confidenceScore <= 100))
+        && data.skills is list && data.skills.size() <= 100;
+    }
+
+    function isValidResumeAnalysis(data) {
+      return data.userId == request.auth.uid
+        && data.score is number && data.score >= 0 && data.score <= 100
+        && data.strengths is list && data.strengths.size() <= 20
+        && data.weaknesses is list && data.weaknesses.size() <= 20
+        && data.recommendations is list && data.recommendations.size() <= 20
+        && data.createdAt == request.time;
+    }
+
+    function isValidInterview(data) {
+      return data.userId == request.auth.uid
+        && data.role is string && data.role.size() <= 100
+        && data.status in ['ongoing', 'completed']
+        && data.transcript is list && data.transcript.size() <= 100
+        && data.createdAt == request.time;
+    }
+
+    function isValidRoadmap(data) {
+      return data.userId == request.auth.uid
+        && data.role is string && data.role.size() <= 100
+        && data.milestones is list && data.milestones.size() <= 50;
+    }
+
+    // --- Matches ---
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      allow update: if isOwner(userId) && isValidUser(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'targetRoles', 'confidenceScore', 'skills']);
+    }
+
+    match /resumeAnalyses/{analysisId} {
+      allow get: if isOwner(existing().userId);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isOwner(incoming().userId) && isValidResumeAnalysis(incoming());
+      allow delete: if isOwner(existing().userId);
+    }
+
+    match /interviews/{interviewId} {
+      allow get: if isOwner(existing().userId);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isOwner(incoming().userId) && isValidInterview(incoming());
+      allow update: if isOwner(existing().userId) 
+        && existing().status == 'ongoing'
+        && isValidInterview(incoming())
+        && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['transcript', 'status', 'feedback'])
+        );
+      allow delete: if isOwner(existing().userId);
+    }
+
+    match /roadmaps/{roadmapId} {
+      allow get: if isOwner(existing().userId);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isOwner(incoming().userId) && isValidRoadmap(incoming());
+      allow update: if isOwner(existing().userId) && isValidRoadmap(incoming());
+      allow delete: if isOwner(existing().userId);
+    }
+  }
+}

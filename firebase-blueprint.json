@@ -1,0 +1,114 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and career metrics",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "targetRoles": { "type": "array", "items": { "type": "string" } },
+        "confidenceScore": { "type": "number" },
+        "skills": { 
+          "type": "array", 
+          "items": { 
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "level": { "type": "number" }
+            }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "ResumeAnalysis": {
+      "title": "Resume Analysis",
+      "description": "Feedback on a user's resume",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "score": { "type": "number" },
+        "strengths": { "type": "array", "items": { "type": "string" } },
+        "weaknesses": { "type": "array", "items": { "type": "string" } },
+        "recommendations": { "type": "array", "items": { "type": "string" } },
+        "atsOptimizationTips": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "MockInterview": {
+      "title": "Mock Interview Session",
+      "description": "AI-driven interview session",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "role": { "type": "string" },
+        "status": { "type": "string", "enum": ["ongoing", "completed"] },
+        "transcript": { 
+          "type": "array", 
+          "items": { 
+            "type": "object",
+            "properties": {
+              "role": { "type": "string", "enum": ["ai", "user"] },
+              "content": { "type": "string" },
+              "timestamp": { "type": "string" }
+            }
+          }
+        },
+        "feedback": {
+          "type": "object",
+          "properties": {
+            "overallScore": { "type": "number" },
+            "communicationScore": { "type": "number" },
+            "technicalScore": { "type": "number" },
+            "summary": { "type": "string" },
+            "improvementAreas": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Roadmap": {
+      "title": "Career Roadmap",
+      "description": "Personalized skill acquisition path",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "role": { "type": "string" },
+        "milestones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "description": { "type": "string" },
+              "duration": { "type": "string" },
+              "resources": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "resumeAnalyses/{analysisId}": {
+      "schema": "ResumeAnalysis",
+      "description": "Resume analysis history"
+    },
+    "interviews/{interviewId}": {
+      "schema": "MockInterview",
+      "description": "Mock interview sessions"
+    },
+    "roadmaps/{roadmapId}": {
+      "schema": "Roadmap",
+      "description": "User roadmaps"
+    }
+  }
+}

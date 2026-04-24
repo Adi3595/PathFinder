@@ -1,0 +1,14 @@
+{
+  "name": "Pathfinder AI: Career Success Platform",
+  "description": "An AI-powered career growth platform for students and freshers featuring resume analysis, mock interviews, skill roadmaps, and job matching.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "AI Resume Analysis",
+    "Smart Mock Interviews",
+    "Personalized Learning Paths",
+    "LinkedIn Optimization"
+  ]
+}
