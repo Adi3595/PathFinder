@@ -3,8 +3,21 @@ import { useAuth } from '../hooks/useAuth';
 import { generateInterviewQuestion, generateInterviewFeedback } from '../lib/gemini';
 import { db } from '../lib/firebase';
 import { collection, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { motion, AnimatePresence } from 'framer-motion';
-import { BrainCircuit, Send, User, Bot, Sparkles, Trophy, ChevronLeft, Target } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  BrainCircuit, 
+  Send, 
+  User, 
+  Sparkles, 
+  Trophy, 
+  ChevronRight, 
+  Target, 
+  Video, 
+  RefreshCcw, 
+  Zap, 
+  Mic,
+  ArrowRight
+} from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export function MockInterview() {
@@ -58,7 +71,6 @@ export function MockInterview() {
 
     try {
       if (updatedTranscript.filter(t => t.role === 'user').length >= 5) {
-        // End interview after 5 responses for demo
         const interviewFeedback = await generateInterviewFeedback(role, updatedTranscript);
         setFeedback(interviewFeedback);
         await updateDoc(doc(db, 'interviews', interviewId), {
@@ -84,32 +96,46 @@ export function MockInterview() {
 
   if (!isStarted) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-20">
+      <div className="max-w-7xl mx-auto px-8 py-20 flex flex-col items-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-10 text-center"
+           initial={{ opacity: 0, scale: 0.95 }}
+           animate={{ opacity: 1, scale: 1 }}
+           className="glass-card p-12 max-w-2xl w-full text-center relative overflow-hidden"
         >
-          <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mx-auto mb-6">
-            <BrainCircuit className="w-8 h-8 text-brand-400" />
-          </div>
-          <h1 className="text-3xl font-display font-bold text-white mb-4">Interview Simulator</h1>
-          <p className="text-slate-400 mb-8">Choose the role you're interviewing for and start practicing with our AI.</p>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 brand-gradient opacity-10 blur-[100px] -mt-32" />
           
-          <div className="space-y-4">
-            <input
-              type="text"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              placeholder="e.g. Frontend Engineer, Product Manager..."
-              className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-500/50 transition-all font-display"
-            />
+          <div className="w-20 h-20 rounded-3xl bg-purple-500/10 flex items-center justify-center mx-auto mb-8 border border-purple-500/20">
+            <BrainCircuit className="w-10 h-10 text-purple-400" />
+          </div>
+          
+          <h1 className="text-4xl font-display font-bold text-white mb-4 tracking-tight">Interview <span className="gradient-text italic">Simulation</span></h1>
+          <p className="text-slate-500 mb-10 text-lg font-medium leading-relaxed">Articulate your career destination. Our engine will calibrate a psychometric session based on industry benchmarks.</p>
+          
+          <div className="space-y-6">
+            <div className="relative group">
+              <input
+                type="text"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                placeholder="e.g. Senior Machine Learning Engineer"
+                className="w-full bg-[#080808] border border-white/10 rounded-2xl px-6 py-5 text-white placeholder:text-slate-700 focus:outline-none focus:ring-1 focus:ring-purple-500/30 transition-all font-medium text-lg"
+              />
+            </div>
+            
             <button
               onClick={startInterview}
               disabled={loading || !role.trim()}
-              className="w-full glass-button bg-brand-600 hover:bg-brand-500 py-4 text-white font-bold flex items-center justify-center gap-2"
+              className="w-full brand-gradient py-5 text-white font-bold rounded-2xl flex items-center justify-center gap-3 shadow-[0_0_40px_rgba(139,92,246,0.3)] hover:scale-[1.02] active:scale-95 transition-all group disabled:opacity-50"
             >
-              {loading ? "Initializing..." : "Start Interview Pro Session"}
+              {loading ? (
+                <div className="w-6 h-6 border-2 border-white/30 border-t-white animate-spin rounded-full" />
+              ) : (
+                <>
+                  <Zap className="w-5 h-5 fill-white" />
+                  Initialize Pro Session
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </button>
           </div>
         </motion.div>
@@ -119,50 +145,74 @@ export function MockInterview() {
 
   if (feedback) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-display font-bold text-white mb-2">Interview Analysis</h2>
-            <p className="text-slate-400">Great job completing your mock session for {role} role!</p>
+      <div className="max-w-7xl mx-auto px-8 py-12">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
+          <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <h2 className="text-4xl font-display font-bold text-white tracking-tight mb-2">Analysis <span className="gradient-text italic">Report</span></h2>
+              <p className="text-slate-500 font-medium">Session metrics for {role} role at high-stakes level.</p>
+            </div>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="glass-button bg-white/5 border-white/10 px-8 flex items-center gap-3 hover:bg-white/10"
+            >
+              <RefreshCcw className="w-4 h-4" />
+              Reset Engine
+            </button>
+          </header>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="glass-card p-10 text-center relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 brand-gradient opacity-0 group-hover:opacity-10 blur-3xl transition-opacity duration-700" />
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mb-4">Overall Score</p>
+              <div className="text-7xl font-display font-bold gradient-text">{feedback.overallScore}%</div>
+            </div>
+            <div className="glass-card p-10 text-center relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 opacity-0 group-hover:opacity-10 blur-3xl transition-opacity duration-700" />
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mb-4">Technical Strength</p>
+              <div className="text-7xl font-display font-bold text-indigo-400">{feedback.technicalScore}%</div>
+            </div>
+            <div className="glass-card p-10 text-center relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 opacity-0 group-hover:opacity-10 blur-3xl transition-opacity duration-700" />
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mb-4">Soft Components</p>
+              <div className="text-7xl font-display font-bold text-purple-400">{feedback.communicationScore}%</div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="glass-card p-6 text-center">
-              <p className="text-slate-400 text-sm mb-1 uppercase tracking-wider font-semibold">Overall Score</p>
-              <div className="text-5xl font-display font-bold gradient-text">{feedback.overallScore}%</div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-8 glass-card p-10">
+              <h3 className="text-xl font-display font-bold text-white mb-6 flex items-center gap-3">
+                <Sparkles className="w-5 h-5 text-indigo-400" />
+                Strategic Executive Feedback
+              </h3>
+              <p className="text-slate-400 leading-relaxed text-lg font-medium mb-8">{feedback.summary}</p>
+              
+              <div className="h-[1px] w-full bg-white/5 mb-8" />
+              
+              <h4 className="text-xs font-bold text-slate-500 uppercase tracking-[0.25em] mb-6 flex items-center gap-2">
+                <Target className="w-4 h-4 text-emerald-400" />
+                Critical Improvement Vectors
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {feedback.improvementAreas.map((area: string, i: number) => (
+                  <div key={i} className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 text-sm text-slate-300 font-medium flex items-start gap-3 group hover:bg-white/5 transition-all">
+                    <ArrowRight className="w-4 h-4 text-brand-400 mt-0.5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
+                    {area}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="glass-card p-6 text-center">
-              <p className="text-slate-400 text-sm mb-1 uppercase tracking-wider font-semibold">Technical</p>
-              <div className="text-4xl font-display font-bold text-blue-400">{feedback.technicalScore}%</div>
-            </div>
-            <div className="glass-card p-6 text-center">
-              <p className="text-slate-400 text-sm mb-1 uppercase tracking-wider font-semibold">Soft Skills</p>
-              <div className="text-4xl font-display font-bold text-purple-400">{feedback.communicationScore}%</div>
-            </div>
-          </div>
 
-          <div className="glass-card p-8">
-            <h3 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-brand-400" />
-              Comprehensive Feedback
-            </h3>
-            <p className="text-slate-300 leading-relaxed mb-8">{feedback.summary}</p>
-            
-            <h4 className="font-bold text-white mb-4 flex items-center gap-2">
-              <Target className="w-5 h-5 text-brand-400" />
-              Key Improvement Areas
-            </h4>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {feedback.improvementAreas.map((area: string, i: number) => (
-                <li key={i} className="bg-white/5 border border-white/5 rounded-xl p-4 text-sm text-slate-400">
-                  {area}
-                </li>
-              ))}
-            </ul>
-          </div>
-          
-          <div className="flex justify-center">
-             <button onClick={() => window.location.reload()} className="glass-button text-white font-bold px-8">Practice Again</button>
+            <div className="lg:col-span-4 glass-card p-8 bg-brand-500/5 border-indigo-500/20">
+               <Trophy className="w-10 h-10 text-brand-400 mb-6" />
+               <h4 className="text-xl font-display font-bold text-white mb-3">AI Recommendation</h4>
+               <p className="text-slate-400 text-sm leading-relaxed mb-6 font-medium">
+                 Your technical depth is impressive, but you lack structural storytelling in behavioral responses. 
+               </p>
+               <div className="p-4 rounded-2xl bg-white/5 border border-white/5 text-xs text-brand-300 font-bold uppercase tracking-widest text-center">
+                 Master the STAR Method
+               </div>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -170,85 +220,108 @@ export function MockInterview() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 h-[calc(100vh-120px)] flex flex-col">
-      <header className="flex items-center justify-between py-4 border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full glass flex items-center justify-center">
-            <Bot className="w-5 h-5 text-brand-400" />
+    <div className="max-w-7xl mx-auto px-8 h-[calc(100vh-2rem)] flex flex-col py-6">
+      <header className="flex items-center justify-between pb-6 border-b border-white/5 mb-6">
+        <div className="flex items-center gap-4">
+           <div className="w-12 h-12 rounded-2xl glass flex items-center justify-center border border-indigo-500/20">
+            <Video className="w-6 h-6 text-indigo-400" />
           </div>
           <div>
-            <h2 className="font-display font-bold text-white leading-tight">AI Interviewer</h2>
-            <p className="text-xs text-brand-400 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-              Live Session: {role}
-            </p>
+            <h2 className="font-display font-bold text-white text-xl tracking-tight">AI Interviewer</h2>
+            <div className="flex items-center gap-2">
+               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                Active Simulation: {role}
+              </p>
+            </div>
           </div>
         </div>
-        <div className="text-xs text-slate-500 font-mono">
-          Questions: {transcript.filter(t => t.role === 'user').length} / 5
+        <div className="px-5 py-2 glass rounded-2xl border-white/5 flex items-center gap-4">
+           <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Progress</span>
+           <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden">
+              <motion.div 
+                animate={{ width: `${(transcript.filter(t => t.role === 'user').length / 5) * 100}%` }}
+                className="h-full brand-gradient" 
+              />
+           </div>
+           <span className="text-xs font-bold text-white">{transcript.filter(t => t.role === 'user').length}/5</span>
         </div>
       </header>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto py-8 space-y-6 scrollbar-hide">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto pt-6 pb-24 space-y-10 scrollbar-hide px-4">
         {transcript.map((msg, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 15, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             className={cn(
-              "flex gap-4 max-w-[85%]",
+              "flex gap-6 max-w-[80%]",
               msg.role === 'user' ? "ml-auto flex-row-reverse" : ""
             )}
           >
             <div className={cn(
-              "w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center border",
-              msg.role === 'user' ? "bg-brand-600 border-brand-500" : "bg-white/10 border-white/10"
+              "w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center border transition-all duration-500",
+              msg.role === 'user' ? "brand-gradient border-white/20 shadow-2xl" : "bg-[#0c0c0c] border-white/5"
             )}>
-              {msg.role === 'user' ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-brand-400" />}
+              {msg.role === 'user' ? <User className="w-6 h-6 text-white" /> : <BrainCircuit className="w-6 h-6 text-indigo-400" />}
             </div>
             <div className={cn(
-              "p-4 rounded-2xl text-sm leading-relaxed",
-              msg.role === 'user' ? "bg-brand-600 text-white rounded-tr-none" : "glass text-slate-200 rounded-tl-none"
+              "p-7 rounded-[2.5rem] text-[15px] leading-relaxed font-medium shadow-2xl relative group",
+              msg.role === 'user' 
+                ? "brand-gradient text-white rounded-tr-none" 
+                : "bg-[#0c0c0c] border border-white/5 text-slate-300 rounded-tl-none"
             )}>
               {msg.content}
+              <div className={cn(
+                 "absolute -bottom-6 text-[9px] font-bold uppercase tracking-widest text-slate-600",
+                 msg.role === 'user' ? "right-2" : "left-2"
+              )}>
+                {msg.role === 'user' ? 'Candidate' : 'Interviewer Bot'}
+              </div>
             </div>
           </motion.div>
         ))}
         {loading && (
-          <div className="flex gap-4">
-             <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center">
-                <Bot className="w-4 h-4 text-brand-400" />
+          <div className="flex gap-6 max-w-[80%]">
+             <div className="w-12 h-12 rounded-2xl bg-[#0c0c0c] border border-white/5 flex items-center justify-center">
+                <BrainCircuit className="w-6 h-6 text-indigo-400 animate-pulse" />
              </div>
-             <div className="p-4 rounded-2xl glass flex gap-1 items-center">
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-500 animate-bounce" />
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-500 animate-bounce [animation-delay:0.2s]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-500 animate-bounce [animation-delay:0.4s]" />
+             <div className="p-7 rounded-[2.5rem] rounded-tl-none bg-[#0c0c0c] border border-white/5 flex gap-1.5 items-center">
+                <div className="flex gap-1">
+                  <div className="w-1 h-1 rounded-full bg-indigo-500 animate-bounce" />
+                  <div className="w-1 h-1 rounded-full bg-indigo-500 animate-bounce [animation-delay:0.2s]" />
+                  <div className="w-1 h-1 rounded-full bg-indigo-500 animate-bounce [animation-delay:0.4s]" />
+                </div>
+                <span className="text-slate-600 text-[10px] font-bold uppercase tracking-widest ml-2 italic">Processing cognitive response...</span>
              </div>
           </div>
         )}
       </div>
 
-      <div className="py-4">
-        <div className="relative">
+      <div className="fixed bottom-10 left-[calc(18rem+2rem)] right-12 z-20">
+        <div className="max-w-4xl mx-auto relative group">
+          <div className="absolute -inset-1 brand-gradient opacity-0 group-focus-within:opacity-10 blur-xl transition-opacity duration-500 rounded-[2.5rem]" />
           <input
             type="text"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Type your response..."
-            className="w-full glass bg-slate-900 px-6 py-4 pr-16 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500/50 transition-all shadow-2xl"
+            placeholder="Articulate your professional response..."
+            className="w-full bg-[#080808]/80 backdrop-blur-3xl border border-white/5 px-10 py-6 pr-32 rounded-[2.5rem] text-white focus:outline-none focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-[0_20px_50px_rgba(0,0,0,0.5)] font-medium text-lg"
           />
-          <button
-            onClick={handleSend}
-            disabled={loading || !userInput.trim()}
-            className="absolute right-2 top-2 p-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl transition-all disabled:opacity-50"
-          >
-            <Send className="w-5 h-5" />
-          </button>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3">
+             <button className="p-3 text-slate-500 hover:text-indigo-400 transition-colors">
+                <Mic className="w-6 h-6" />
+             </button>
+             <button
+              onClick={handleSend}
+              disabled={loading || !userInput.trim()}
+              className="p-4 brand-gradient rounded-2xl text-white transition-all disabled:opacity-50 disabled:grayscale shadow-xl hover:scale-105 active:scale-95"
+            >
+              <Send className="w-6 h-6" />
+            </button>
+          </div>
         </div>
-        <p className="text-[10px] text-center text-slate-500 mt-2 uppercase tracking-widest font-bold">
-          Speak clearly and professionally for best results
-        </p>
       </div>
     </div>
   );

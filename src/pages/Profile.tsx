@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { db } from '../lib/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { User, Mail, Target, Award, Plus, X, Save, Sparkles } from 'lucide-react';
 
 export function Profile() {

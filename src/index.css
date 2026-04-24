@@ -1,49 +1,67 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   
-  --color-brand-50: #f0f7ff;
-  --color-brand-100: #e0effe;
-  --color-brand-200: #bae0fd;
-  --color-brand-300: #7cc9fb;
-  --color-brand-400: #36aef6;
-  --color-brand-500: #0c91e6;
-  --color-brand-600: #0074c3;
-  --color-brand-700: #025ca0;
-  --color-brand-800: #064f84;
-  --color-brand-900: #0b426d;
-  --color-brand-950: #072a49;
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ede9fe;
+  --color-brand-200: #ddd6fe;
+  --color-brand-300: #c4b5fd;
+  --color-brand-400: #a78bfa;
+  --color-brand-500: #8b5cf6;
+  --color-brand-600: #7c3aed;
+  --color-brand-700: #6d28d9;
+  --color-brand-800: #5b21b6;
+  --color-brand-900: #4c1d95;
+  --color-brand-950: #2e1065;
 }
 
 @layer base {
   body {
-    @apply bg-[#030712] text-slate-200 font-sans antialiased selection:bg-brand-500/30;
+    @apply bg-[#050505] text-slate-300 font-sans antialiased selection:bg-brand-500/30;
   }
 }
 
 @utility glass {
-  @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  @apply bg-white/[0.03] backdrop-blur-3xl border border-white/10;
 }
 
 @utility glass-card {
-  @apply glass rounded-2xl shadow-2xl;
+  @apply glass rounded-[2rem] shadow-[0_22px_70px_4px_rgba(0,0,0,0.56)];
 }
 
 @utility glass-button {
-  @apply relative overflow-hidden transition-all duration-300 border border-white/10 rounded-xl px-4 py-2 hover:bg-white/10 active:scale-95;
+  @apply relative overflow-hidden transition-all duration-500 border border-white/10 rounded-2xl px-6 py-3 hover:bg-white/10 active:scale-95 text-sm font-semibold;
 }
 
 @utility gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-300 via-brand-500 to-purple-500;
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-indigo-200 to-indigo-500;
+}
+
+@utility brand-gradient {
+  @apply bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600;
 }
 
 @utility atmosphere-bg {
   background: 
-    radial-gradient(circle at 0% 0%, rgba(124, 201, 251, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 1) 0%, rgba(3, 7, 18, 1) 100%);
+    radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 100% 0%, rgba(236, 72, 153, 0.05) 0%, transparent 30%),
+    #050505;
+}
+
+@utility text-glow {
+  text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@utility animate-float {
+  animation: float 6s ease-in-out infinite;
 }
